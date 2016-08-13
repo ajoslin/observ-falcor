@@ -1,0 +1,45 @@
+{
+  "name": "observ-falcor",
+  "main": "index.js",
+  "version": "0.0.0",
+  "description": "Easily manage Falcor lists / hashes with the observ-family",
+  "license": "MIT",
+  "repository": "ajoslin/observ-falcor",
+  "author": {
+    "name": "Andrew Joslin",
+    "email": "andrewtjoslin@gmail.com",
+    "url": "ajoslin.com"
+  },
+  "scripts": {
+    "test": "standard && tape '!(node_modules)/**/test.js'"
+  },
+  "keywords": [
+    "_"
+  ],
+  "devDependencies": {
+    "falcor": "~0.1.17",
+    "observ": "~0.2.0",
+    "observ-struct": "~6.0.0",
+    "standard": "^7.0.0",
+    "tape": "^4.0.0"
+  },
+  "files": [
+    "index.js",
+    "test.js"
+  ],
+  "dependencies": {
+    "ap": "~0.2.0",
+    "assert": "~1.4.1",
+    "dot-prop": "~3.0.0",
+    "falcor-lazy-model": "~3.0.0",
+    "next-tick-debounce": "~2.0.0",
+    "observ": "~0.2.0",
+    "observ-array": "~3.2.1",
+    "observ-struct-free": "~1.0.0",
+    "observ-varhash": "~1.0.8",
+    "soft-update-struct": "~1.2.1",
+    "weakmap-event": "~2.0.6",
+    "weakmap-shim": "~1.1.0",
+    "xtend": "~4.0.1"
+  }
+}
