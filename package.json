@@ -14,7 +14,8 @@
     "test": "standard && tape '!(node_modules)/**/test.js'"
   },
   "keywords": [
-    "_"
+    "observ",
+    "falcor"
   ],
   "devDependencies": {
     "falcor": "~0.1.17",
@@ -23,10 +24,6 @@
     "standard": "^7.0.0",
     "tape": "^4.0.0"
   },
-  "files": [
-    "index.js",
-    "test.js"
-  ],
   "dependencies": {
     "ap": "~0.2.0",
     "assert": "~1.4.1",

@@ -4,7 +4,7 @@ var assert = require('assert')
 var List = require('./list')
 var Store = require('./store')
 
-module.exports = function HgFalcor (model) {
+module.exports = function ObservFalcor (model) {
   assert.ok(model._falcorLazyModel, 'model must be an instance of "falcor-lazy-model"')
 
   var stores = {}
