@@ -11,7 +11,7 @@
     "url": "ajoslin.com"
   },
   "scripts": {
-    "test": "standard && tape '!(node_modules)/**/test.js'"
+    "test": "standard && tape '!(node_modules)/**/{test,*-test}.js' | tap-spec"
   },
   "keywords": [
     "observ",
@@ -22,11 +22,13 @@
     "observ": "~0.2.0",
     "observ-struct": "~6.0.0",
     "standard": "^7.0.0",
+    "tap-spec": "~4.1.1",
     "tape": "^4.0.0"
   },
   "dependencies": {
     "ap": "~0.2.0",
     "assert": "~1.4.1",
+    "cast-array": "~1.0.1",
     "dot-prop": "~3.0.0",
     "falcor-lazy-model": "~3.0.0",
     "next-tick-debounce": "~2.0.0",
@@ -34,6 +36,7 @@
     "observ-array": "~3.2.1",
     "observ-struct-free": "~1.0.0",
     "observ-varhash": "~1.0.8",
+    "queue-that-callback": "~1.0.0",
     "soft-update-struct": "~1.2.1",
     "weakmap-event": "~2.0.6",
     "weakmap-shim": "~1.1.0",

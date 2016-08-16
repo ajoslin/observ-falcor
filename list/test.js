@@ -1,13 +1,23 @@
 const test = require('tape')
-
 const Model = require('falcor').Model
 const Struct = require('observ-struct')
 const Observ = require('observ')
 const LazyModel = require('falcor-lazy-model')
+const toPathValues = require('../util/to-path-values')
 const Store = require('../store')
 const List = require('./')
 
-function setup (callback) {
+function setup (graph, callback) {
+  if (typeof graph === 'function') {
+    callback = graph
+    graph = {
+      items: {
+        0: {id: 0, title: '0title'},
+        1: {id: 1, title: '1title'},
+        length: 2
+      }
+    }
+  }
   const model = LazyModel((cb) => cb(new Model()))
 
   const store = Store(model, {
@@ -24,21 +34,12 @@ function setup (callback) {
     prefix: ['items']
   })
 
-  model.set({
-    path: ['items', 0],
-    value: {title: '0title', id: '0'}
-  }, {
-    path: ['items', 1],
-    value: {title: '1title', id: '1'}
-  }, {
-    path: ['items', 'length'],
-    value: 2
-  }, function onSet () {
+  model.set.apply(model, toPathValues(graph).concat(function onSet () {
     callback({model, store, list})
-  })
+  }))
 }
 
-test('basic', function (t) {
+test('list: basic', function (t) {
   setup(function ({model, store, list}) {
     t.deepEqual(list(), [])
 
@@ -50,8 +51,8 @@ test('basic', function (t) {
       list.fetchData(function (error) {
         t.ifError(error)
         t.deepEqual(list(), [
-          {title: '0title', id: '0'},
-          {title: '1title', id: '1'}
+          {title: '0title', id: 0},
+          {title: '1title', id: 1}
         ])
         t.end()
       })

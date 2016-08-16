@@ -5,6 +5,7 @@ var ObservArray = require('observ-array')
 var dotProp = require('dot-prop')
 var partialRight = require('ap').partialRight
 var assign = require('xtend/mutable')
+var ListMethods = require('./methods')
 var joinPaths = require('../util/join-paths')
 var setNonEnumerable = require('../util/set-non-enumerable')
 
@@ -18,13 +19,14 @@ module.exports = function FalcorList (model, options) {
   options = options || {}
   var store = options.store
   var prefix = options.prefix
+  var keyGetter = partialRight(getPathProp, options.keyPath || ['id'])
 
   assert.ok(store && typeof store.put === 'function', 'options.store required')
 
-  var keyGetter = partialRight(getPathProp, options.keyPath || ['id'])
-  var range = Struct({
-    from: Observ(0),
-    length: Observ(0)
+  var range
+  range = Struct({
+    from: Observ(options.from || 0),
+    length: Observ(options.length || 0)
   })
 
   var state = ObservArray([])
@@ -39,12 +41,16 @@ module.exports = function FalcorList (model, options) {
   })
 
   // All the other properties can be given through assign
-  return assign(state, {
-    from: range.from,
-    fetchData: fetchData,
-    fetchRange: fetchRange,
-    fetchRangeAndData: fetchRangeAndData
-  })
+  return assign(
+    state,
+    ListMethods(model, prefix),
+    {
+      from: range.from,
+      fetchData: fetchData,
+      fetchRange: fetchRange,
+      fetchRangeAndData: fetchRangeAndData
+    }
+  )
 
   function fetchRangeAndData (callback) {
     callback = callback || noop
@@ -102,7 +108,7 @@ module.exports = function FalcorList (model, options) {
 
   function getId (data) {
     var id = keyGetter(data)
-    if (!id) {
+    if (id == null) {
       throw new TypeError('Key path ' + JSON.stringify(options.keyPath) +
                           ' is empty for data at ' + JSON.stringify(prefix))
     }
