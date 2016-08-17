@@ -14,12 +14,17 @@ var setNonEnumerable = require('../util/set-non-enumerable')
 
 var unlisteners = WeakStore()
 
-var defaults = {}
+var defaults = {
+  parse: identity
+}
+
+function identity (n) { return n }
 
 module.exports = function Store (model, options) {
   options = extend(defaults, options)
 
   assert.equal(typeof options.construct, 'function', 'function options.construct required')
+  assert.equal(typeof options.parse, 'function', 'function options.parse required')
   assert.ok(Array.isArray(options.paths), 'array options.paths required')
   assert.ok(Array.isArray(options.prefix), 'array options.prefix required')
 
@@ -64,7 +69,7 @@ module.exports = function Store (model, options) {
   function put (id, data) {
     if (state.has(id)) return state.get(id)
 
-    var value = options.construct(data)
+    var value = options.construct(options.parse(data))
     assert.ok(typeof value === 'function' && typeof value.set === 'function',
               'options.construct must return an observ instance')
 
@@ -100,11 +105,12 @@ module.exports = function Store (model, options) {
     function onData (error, data) {
       if (error) callback(error)
 
+      var update = options.parse(data)
       var value = state.get(id)
       if (value._type === 'observ-struct') {
-        updateStruct(value, data, isEqual)
+        updateStruct(value, update, isEqual)
       } else {
-        value.set(data)
+        value.set(update)
       }
       callback(null, value)
     }

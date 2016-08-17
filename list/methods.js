@@ -17,10 +17,6 @@ function PathValueRef (path, value) {
   return PathValue(path, value)
 }
 
-function isRef (item) {
-  return item && item.$type === 'ref'
-}
-
 var methods = {
   falcorAppend: append,
   falcorPrepend: prepend,
@@ -68,17 +64,15 @@ function prepend (model, prefix, options, callback) {
 function insert (model, prefix, options, callback) {
   options = extend({index: 'first'}, options)
 
-  assert.ok(typeof options.index === 'number' || options.index === 'last' || options.index === 'first',
+  assert.ok(typeof options.index === 'number' || /last|first/.test(options.index),
             'options.index must be number or string "last" or string "first"')
   assert.ok(options.value != null || options.values != null,
             'options.value (single) or options.values (array) required')
 
-  var insertRefs = castArray(options.values || options.value)
-  var insertCount = insertRefs.length
+  var insertValues = castArray(options.values || options.value)
+  var insertCount = insertValues.length
 
-  assert.ok(insertRefs.every(isRef), 'expected item(s) being inserted to be of type ref')
-
-  return getList(model, prefix, onList)
+  return getList(model, prefix, options.range, onList)
 
   function onList (error, list) {
     if (error) return callback(error)
@@ -99,8 +93,8 @@ function insert (model, prefix, options, callback) {
       var data = []
 
       // Add the inserted items
-      insertRefs.forEach(function (ref, refIndex) {
-        data.push(PathValueRef(prefix.concat(insertAt + refIndex), ref))
+      insertValues.forEach(function (insertValue, insertIndex) {
+        data.push(PathValue(prefix.concat(insertAt + insertIndex), insertValue))
       })
 
       // Shift everything after insertions right by number of insertions
