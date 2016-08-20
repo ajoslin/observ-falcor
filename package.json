@@ -18,7 +18,6 @@
     "falcor"
   ],
   "devDependencies": {
-    "falcor": "~0.1.17",
     "observ": "~0.2.0",
     "observ-struct": "~6.0.0",
     "standard": "^7.0.0",
@@ -30,6 +29,7 @@
     "assert": "~1.4.1",
     "cast-array": "~1.0.1",
     "dot-prop": "~3.0.0",
+    "falcor": "~0.1.17",
     "falcor-lazy-model": "~3.0.0",
     "next-tick-debounce": "~2.0.0",
     "observ": "~0.2.0",
