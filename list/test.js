@@ -59,3 +59,29 @@ test('list: basic', function (t) {
     })
   })
 })
+
+test('list: append then fetch', function (t) {
+  setup(function ({model, store, list}) {
+    list.fetchRangeAndData(function () {
+      t.equal(list.from(), 0)
+      t.equal(list.length(), 2)
+
+      list.falcorAppend({
+        value: Model.atom({title: '2title', id: 2})
+      }, function (error, range) {
+        t.ifError(error)
+        list.length.set(3)
+
+        list.fetchData(function (error, range) {
+          t.ifError(error)
+          t.deepEqual(list(), [
+            {title: '0title', id: 0},
+            {title: '1title', id: 1},
+            {title: '2title', id: 2}
+          ])
+          t.end()
+        })
+      })
+    })
+  })
+})

@@ -79,7 +79,7 @@ function insert (model, prefix, options, callback) {
 
     var newLength = list.length + insertCount
     var insertAt = options.index === 'first' ? list.from
-      : options.index === 'last' ? (list.from + list.length - 1)
+      : options.index === 'last' ? (list.from + list.length)
       : options.index
 
     model.setLocal(pathValues(), onSet)
