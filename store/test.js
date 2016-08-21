@@ -77,3 +77,26 @@ test('store: fetch and remove', function (t) {
     })
   })
 })
+
+test('store: putting an atom', function (t) {
+  const {model, store} = setup()
+
+  model.set({
+    path: ['bananasById', 'atom'],
+    value: Model.atom({
+      color: {atomic: true}
+    })
+  }, function (error) {
+    t.ifError(error)
+
+    store.fetch('atom', function (error, value) {
+      t.ifError(error)
+
+      t.ok(store.has('atom'))
+      t.deepEqual(store.get('atom')(), {
+        color: {atomic: true}
+      })
+      t.end()
+    })
+  })
+})

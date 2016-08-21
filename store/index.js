@@ -103,7 +103,7 @@ module.exports = function Store (model, options) {
     getData(id, {local: true}, onData)
 
     function onData (error, data) {
-      if (error) callback(error)
+      if (error) return callback(error)
 
       var update = options.parse(data)
       var value = state.get(id)
