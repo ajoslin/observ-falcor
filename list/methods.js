@@ -37,7 +37,9 @@ module.exports = function ArrayMethods (model, prefix) {
   function wrapMethod (method) {
     return function falcorListWrapped (options, callback) {
       queue.add(function falcorListQueuedMethod (done) {
-        method(model, prefix, options, done)
+        setTimeout(function () {
+          method(model, prefix, options, done)
+        }, 0)
       }, callback)
     }
   }
