@@ -19,7 +19,8 @@ module.exports = function FalcorList (model, options) {
   options = options || {}
   var store = options.store
   var prefix = options.prefix
-  var keyGetter = partialRight(getPathProp, options.keyPath || ['id'])
+  var keyPath = options.keyPath || ['id']
+  var keyGetter = partialRight(getPathProp, keyPath)
 
   assert.ok(store && typeof store.put === 'function', 'options.store required')
 
@@ -109,7 +110,7 @@ module.exports = function FalcorList (model, options) {
   function getId (data) {
     var id = keyGetter(data)
     if (id == null) {
-      throw new TypeError('Key path ' + JSON.stringify(options.keyPath) +
+      throw new TypeError('Key path ' + JSON.stringify(keyPath) +
                           ' is empty for data at ' + JSON.stringify(prefix))
     }
     return id
