@@ -244,6 +244,7 @@ function getList (model, prefix, range, callback) {
   }
 
   if (range) {
+    if (typeof range === 'function') range = range()
     assertRange(range)
     onRange(null, range)
   } else {
