@@ -24,13 +24,11 @@ module.exports = function FalcorList (model, options) {
 
   assert.ok(store && typeof store.put === 'function', 'options.store required')
 
-  var range
-  range = Struct({
+  var state = ObservArray([])
+  var range = Struct({
     from: Observ(options.from || 0),
     length: Observ(options.length || 0)
   })
-
-  var state = ObservArray([])
 
   state(function onChange (array) {
     setNonEnumerable(array, 'from', range.from())
@@ -47,11 +45,24 @@ module.exports = function FalcorList (model, options) {
     ListMethods(model, prefix),
     {
       from: range.from,
+      saveRange: saveRange,
       fetchData: fetchData,
       fetchRange: fetchRange,
       fetchRangeAndData: fetchRangeAndData
     }
   )
+
+  function saveRange (values, callback) {
+    if (arguments.length === 1) {
+      callback = values
+      values = range()
+    }
+
+    model.setLocal([
+      {path: prefix.concat('from'), value: values.from},
+      {path: prefix.concat('length'), value: values.length}
+    ], callback)
+  }
 
   function fetchRangeAndData (callback) {
     callback = callback || noop

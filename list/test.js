@@ -116,3 +116,36 @@ test('list: prepend then fetch', function (t) {
     })
   })
 })
+
+test('list: saveRange default', function (t) {
+  setup(function ({model, store, list}) {
+    list.from.set(4)
+    list.length.set(100)
+
+    list.saveRange(function (error) {
+      t.ifError(error)
+
+      list.fetchRange(function (error) {
+        t.ifError(error)
+        t.equal(list.from(), 4)
+        t.equal(list.length(), 100)
+        t.end()
+      })
+    })
+  })
+})
+
+test('list: saveRange passed in range', function (t) {
+  setup(function ({model, store, list}) {
+    list.saveRange({from: 10, length: 11}, function (error) {
+      t.ifError(error)
+
+      list.fetchRange(function (error) {
+        t.ifError(error)
+        t.equal(list.from(), 10)
+        t.equal(list.length(), 11)
+        t.end()
+      })
+    })
+  })
+})

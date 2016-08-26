@@ -1,6 +1,6 @@
 module.exports = function objectToPathValues (object, prefix) {
+  prefix = prefix || []
   var pathValues = []
-  var prefix = prefix || []
 
   reduce(pathValues, prefix, object)
 
