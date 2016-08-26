@@ -8,6 +8,7 @@ var partial = require('ap').partial
 var VarHash = require('observ-varhash')
 var WeakStore = require('weakmap-shim/create-store')
 var watch = require('../watch')
+var toPathValues = require('../util/to-path-values')
 var joinPaths = require('../util/join-paths')
 var isEqual = require('../util/is-equal')
 var setNonEnumerable = require('../util/set-non-enumerable')
@@ -41,6 +42,7 @@ module.exports = function Store (model, options) {
     has: has,
     delete: del,
     put: put,
+    save: save,
     fetch: fetch
   })
 
@@ -95,6 +97,15 @@ module.exports = function Store (model, options) {
         callback(null, state.put(id, data))
       }
     }
+  }
+
+  function save (id, data, callback) {
+    const pathValues = toPathValues(data, prefix.concat(id))
+
+    model.setLocal(pathValues, function (error) {
+      if (error) return callback(error)
+      fetch(id, callback)
+    })
   }
 
   function handleChange (id, callback) {

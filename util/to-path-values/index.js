@@ -1,6 +1,6 @@
-module.exports = function objectToPathValues (object) {
+module.exports = function objectToPathValues (object, prefix) {
   var pathValues = []
-  var prefix = []
+  var prefix = prefix || []
 
   reduce(pathValues, prefix, object)
 
@@ -10,7 +10,7 @@ module.exports = function objectToPathValues (object) {
 function reduce (pathValues, prefix, value) {
   if (value == null) return
 
-  if (typeof value !== 'object' || value.$type === 'atom') {
+  if (typeof value !== 'object' || value.$type === 'atom' || value.$type === 'ref') {
     pathValues.push({
       path: prefix,
       value: value
