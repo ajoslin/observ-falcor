@@ -238,7 +238,7 @@ function getRange (model, prefix, callback) {
 }
 
 function getList (model, prefix, range, callback) {
-  if (typeof range === 'function') {
+  if (arguments.length === 3) {
     callback = range
     range = undefined
   }
