@@ -3,13 +3,22 @@ var assert = require('assert')
 var dotProp = require('dot-prop')
 var extend = require('xtend')
 var castArray = require('cast-array')
-var falcor = require('falcor')
 var assertRange = require('../util/assert-range')
 var getOpQueueForPrefix = require('./get-queue')
 
-var Ref = falcor.Model.ref
-var PathValue = falcor.Model.pathValue
+function Ref (path) {
+  return {
+    $type: 'ref',
+    value: path
+  }
+}
 
+function PathValue (path, value) {
+  return {
+    path: path,
+    value: value
+  }
+}
 function PathValueRef (path, value) {
   if (!value || value.$type !== 'ref') {
     value = Ref(value)
