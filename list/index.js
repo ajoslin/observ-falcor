@@ -25,29 +25,11 @@ module.exports = function FalcorList (model, options) {
 
   var state = ObservVarlist([])
 
-  // All the other properties can be given through assign
-  return assign(
-    state,
-    // ListMethods(model, prefix),
-    {
-      // saveRange: saveRange,
-      fetchData: fetchData,
-      fetchRange: fetchRange,
-      fetchRangeAndData: fetchRangeAndData
-    }
-  )
-
-  // function saveRange (values, callback) {
-  //   if (arguments.length === 1) {
-  //     callback = values
-  //     values = state()
-  //   }
-
-  //   model.setLocal([
-  //     {path: prefix.concat('from'), value: values.from},
-  //     {path: prefix.concat('length'), value: values.count}
-  //   ], callback)
-  // }
+  return assign(state, {
+    fetchData: fetchData,
+    fetchRange: fetchRange,
+    fetchRangeAndData: fetchRangeAndData
+  })
 
   function fetchRangeAndData (callback) {
     callback = callback || noop
