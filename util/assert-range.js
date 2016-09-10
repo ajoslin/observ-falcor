@@ -1,4 +1,4 @@
-const assert = require('assert')
+var assert = require('assert')
 
 module.exports = function assertRange (range) {
   assert.equal(typeof range, 'object', 'object range expected')
