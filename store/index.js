@@ -100,7 +100,7 @@ module.exports = function Store (model, options) {
   }
 
   function save (id, data, callback) {
-    const pathValues = toPathValues(data, prefix.concat(id))
+    var pathValues = toPathValues(data, prefix.concat(id))
 
     model.setLocal(pathValues, function (error) {
       if (error) return callback(error)
