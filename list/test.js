@@ -25,6 +25,11 @@ function setup (graph, callback) {
     cache: graph
   })))
 
+  // Just call the callback for invalidate during these tests
+  model.invalidate = function noopInvalidate () {
+    arguments[arguments.length - 1]()
+  }
+
   const store = Store(model, {
     prefix: ['itemsById'],
     paths: ['title', 'id'],
@@ -44,106 +49,21 @@ function setup (graph, callback) {
 
 test('list: basic', function (t) {
   setup(function ({model, store, list}) {
-    t.deepEqual(list(), [])
+    t.deepEqual(list(), {from: 0, count: 0})
 
     list.fetchRange(function (error, range) {
       t.ifError(error)
       t.equal(list.from(), 0)
-      t.equal(list.length(), 2)
+      t.equal(list.count(), 2)
 
       list.fetchData(function (error) {
         t.ifError(error)
-        t.deepEqual(list(), [
-          {title: 'atitle', id: 'a'},
-          {title: 'btitle', id: 'b'}
-        ])
-        t.end()
-      })
-    })
-  })
-})
-
-test('list: append then fetch', function (t) {
-  setup(function ({model, store, list}) {
-    list.fetchRangeAndData(function () {
-      t.equal(list.from(), 0)
-      t.equal(list.length(), 2)
-
-      list.falcorAppend({
-        value: Model.atom({title: 'ctitle', id: 'c'})
-      }, function (error, range) {
-        t.ifError(error)
-        list.from.set(range.from)
-        list.length.set(range.length)
-
-        list.fetchData(function (error, range) {
-          t.ifError(error)
-          t.deepEqual(list(), [
-            {title: 'atitle', id: 'a'},
-            {title: 'btitle', id: 'b'},
-            {title: 'ctitle', id: 'c'}
-          ])
-          t.end()
+        t.deepEqual(list(), {
+          from: 0,
+          count: 2,
+          0: {title: 'atitle', id: 'a'},
+          1: {title: 'btitle', id: 'b'}
         })
-      })
-    })
-  })
-})
-
-test('list: prepend then fetch', function (t) {
-  setup(function ({model, store, list}) {
-    list.fetchRangeAndData(function () {
-      t.equal(list.from(), 0)
-      t.equal(list.length(), 2)
-
-      list.falcorPrepend({
-        value: Model.atom({title: 'ctitle', id: 'c'})
-      }, function (error, range) {
-        t.ifError(error)
-        list.from.set(range.from)
-        list.length.set(range.length)
-
-        list.fetchData(function (error) {
-          t.ifError(error)
-          t.deepEqual(list(), [
-            {title: 'ctitle', id: 'c'},
-            {title: 'atitle', id: 'a'},
-            {title: 'btitle', id: 'b'}
-          ])
-          t.end()
-        })
-      })
-    })
-  })
-})
-
-test('list: saveRange default', function (t) {
-  setup(function ({model, store, list}) {
-    list.from.set(4)
-    list.length.set(100)
-
-    list.saveRange(function (error) {
-      t.ifError(error)
-
-      list.fetchRange(function (error) {
-        t.ifError(error)
-        t.equal(list.from(), 4)
-        t.equal(list.length(), 100)
-        t.end()
-      })
-    })
-  })
-})
-
-test('list: saveRange passed in range', function (t) {
-  setup(function ({model, store, list}) {
-    list.saveRange({from: 10, length: 11}, function (error) {
-      t.ifError(error)
-
-      list.fetchRange(function (error) {
-        t.ifError(error)
-        t.equal(list.from(), 10)
-        t.equal(list.length(), 11)
         t.end()
       })
     })
