@@ -1,8 +1,10 @@
 var assert = require('assert')
 var ObservVarlist = require('observ-varlist')
 var dotProp = require('dot-prop')
+
 var extend = require('xtend')
 var assign = require('xtend/mutable')
+var partialRight = require('ap').partialRight
 // var ListMethods = require('./methods')
 var joinPaths = require('../util/join-paths')
 
@@ -16,6 +18,8 @@ module.exports = function FalcorList (model, options) {
   options = options || {}
   var store = options.store
   var prefix = options.prefix
+  var keyPath = options.keyPath || ['id']
+  var keyGetter = partialRight(getPathProp, keyPath)
 
   assert.ok(store && typeof store.put === 'function', 'options.store required')
 
@@ -83,6 +87,7 @@ module.exports = function FalcorList (model, options) {
       from: state.from(),
       length: state.count()
     })
+
     model.invalidate(listPrefix, function () {
       model.get(joinPaths(listPrefix, store.paths()), onData)
     })
@@ -92,13 +97,31 @@ module.exports = function FalcorList (model, options) {
         return callback(error || new TypeError('fetchData: No data at ' + JSON.stringify(prefix)))
       }
 
-      var list = getPathProp(graph.json, prefix)
-      state.reset(extend(list, {
+      var graphData = getPathProp(graph.json, prefix)
+      var result = {}
+
+      for (var i = state.from(), ii = state.from() + state.count(); i < ii; i++) {
+        var data = graphData[i]
+        var id = getId(data)
+        var value = store.put(id, data)
+        result[i] = value
+      }
+
+      state.reset(extend(result, {
         from: state.from(),
         length: state.count()
       }))
 
       callback(null, state())
     }
+  }
+
+  function getId (data) {
+    var id = keyGetter(data)
+    if (id == null) {
+      throw new TypeError('Key path ' + JSON.stringify(keyPath) +
+                          ' is empty for data at ' + JSON.stringify(prefix))
+    }
+    return id
   }
 }
