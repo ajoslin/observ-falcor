@@ -26,10 +26,15 @@ module.exports = function FalcorList (model, options) {
   var state = ObservVarlist([])
 
   return assign(state, {
+    invalidate: invalidate,
     fetchData: fetchData,
     fetchRange: fetchRange,
     fetchRangeAndData: fetchRangeAndData
   })
+
+  function invalidate (callback) {
+    model.invalidate(prefix, callback)
+  }
 
   function fetchRangeAndData (callback) {
     callback = callback || noop
@@ -43,11 +48,7 @@ module.exports = function FalcorList (model, options) {
   function fetchRange (callback) {
     callback = callback || noop
 
-    model.invalidate(prefix.concat('from'), prefix.concat('length'), onInvalidate)
-
-    function onInvalidate () {
-      model.get(prefix.concat('from'), prefix.concat('length'), onRange)
-    }
+    model.get(prefix.concat('from'), prefix.concat('length'), onRange)
 
     function onRange (error, graph) {
       if (error || !graph) {
@@ -70,9 +71,7 @@ module.exports = function FalcorList (model, options) {
       length: state.count()
     })
 
-    model.invalidate(listPrefix, function () {
-      model.get(joinPaths(listPrefix, store.paths()), onData)
-    })
+    model.get(joinPaths(listPrefix, store.paths()), onData)
 
     function onData (error, graph) {
       if (error || !graph) {
