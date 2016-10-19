@@ -31,6 +31,7 @@
     "cast-array": "~1.0.1",
     "dot-prop": "~3.0.0",
     "falcor-lazy-model": "^3.0.0",
+    "make-error-cause": "~1.2.2",
     "next-tick-debounce": "~2.0.0",
     "observ": "~0.2.0",
     "observ-varhash": "~1.0.8",

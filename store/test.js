@@ -3,6 +3,7 @@ const LazyModel = require('falcor-lazy-model')
 const Model = require('falcor').Model
 const Struct = require('observ-struct')
 const Observ = require('observ')
+const errors = require('../errors')
 const Store = require('./')
 
 function setup () {
@@ -98,5 +99,14 @@ test('store: putting an atom', function (t) {
       })
       t.end()
     })
+  })
+})
+
+test('store: errors', function (t) {
+  const {store} = setup()
+
+  store.fetch('not_found', (error) => {
+    t.ok(error instanceof errors.DataNotFoundError)
+    t.end()
   })
 })

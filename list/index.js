@@ -5,14 +5,16 @@ var dotProp = require('dot-prop')
 var extend = require('xtend')
 var assign = require('xtend/mutable')
 var partialRight = require('ap').partialRight
-// var ListMethods = require('./methods')
 var joinPaths = require('../util/join-paths')
+var errors = require('../errors')
 
 function getPathProp (obj, path) {
   return dotProp.get(obj, path.join('.'))
 }
 
-function noop () {}
+function defaultThrowIfError (error) {
+  if (error) throw error
+}
 
 module.exports = function FalcorList (model, options) {
   options = options || {}
@@ -37,7 +39,7 @@ module.exports = function FalcorList (model, options) {
   }
 
   function fetchRangeAndData (callback) {
-    callback = callback || noop
+    callback = callback || defaultThrowIfError
 
     fetchRange(function (error) {
       if (error) return callback(error)
@@ -46,25 +48,27 @@ module.exports = function FalcorList (model, options) {
   }
 
   function fetchRange (callback) {
-    callback = callback || noop
+    callback = callback || defaultThrowIfError
 
     model.get(prefix.concat('from'), prefix.concat('length'), onRange)
 
     function onRange (error, graph) {
       if (error || !graph) {
-        return callback(error || new TypeError('fetchRange: No data at ' + JSON.stringify(prefix)))
+        return callback(new errors.RangeNotFoundError(
+          'No "length" property found at prefix ' + JSON.stringify(prefix),
+          error
+        ))
       }
 
       var rangeData = getPathProp(graph.json, prefix)
       state.from.set(rangeData.from || 0)
       state.count.set(rangeData.length || 0)
-
       callback(null, state())
     }
   }
 
   function fetchData (callback) {
-    callback = callback || noop
+    callback = callback || defaultThrowIfError
 
     var listPrefix = prefix.concat({
       from: state.from(),
@@ -75,7 +79,11 @@ module.exports = function FalcorList (model, options) {
 
     function onData (error, graph) {
       if (error || !graph) {
-        return callback(error || new TypeError('fetchData: No data at ' + JSON.stringify(prefix)))
+        return callback(new errors.DataNotFoundError(
+          'No data found in range ' + JSON.stringify({from: state.from(), length: state.count()}) +
+            ' at path ' + JSON.stringify(prefix),
+          error
+        ))
       }
 
       var graphData = getPathProp(graph.json, prefix)

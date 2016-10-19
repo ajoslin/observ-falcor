@@ -4,6 +4,7 @@ const Struct = require('observ-struct')
 const Observ = require('observ')
 const LazyModel = require('falcor-lazy-model')
 const Store = require('../store')
+const errors = require('../errors')
 const List = require('./')
 
 function setup (graph, callback) {
@@ -66,6 +67,19 @@ test('list: basic', function (t) {
         })
         t.end()
       })
+    })
+  })
+})
+
+test('errors', function (t) {
+  t.plan(2)
+  setup({}, function ({model, store, list}) {
+    list.fetchRange((error) => {
+      t.ok(error instanceof errors.RangeNotFoundError)
+    })
+
+    list.fetchData((error) => {
+      t.ok(error instanceof errors.DataNotFoundError)
     })
   })
 })

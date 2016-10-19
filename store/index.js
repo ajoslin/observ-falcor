@@ -12,11 +12,16 @@ var toPathValues = require('../util/to-path-values')
 var joinPaths = require('../util/join-paths')
 var isEqual = require('../util/is-equal')
 var setNonEnumerable = require('../util/set-non-enumerable')
+var errors = require('../errors')
 
 var unlisteners = WeakStore()
 
 var defaults = {
   parse: identity
+}
+
+function defaultThrowIfError (error) {
+  if (error) throw error
 }
 
 function identity (n) { return n }
@@ -84,6 +89,8 @@ module.exports = function Store (model, options) {
   }
 
   function fetch (id, callback) {
+    callback = callback || defaultThrowIfError
+
     if (state.has(id)) return callback(null, state.get(id))
 
     getData(id, {local: false}, onFetchData)
@@ -100,6 +107,8 @@ module.exports = function Store (model, options) {
   }
 
   function save (id, data, callback) {
+    callback = callback || defaultThrowIfError
+
     var pathValues = toPathValues(data, prefix.concat(id))
 
     model.setLocal(pathValues, function (error) {
@@ -109,7 +118,7 @@ module.exports = function Store (model, options) {
   }
 
   function handleChange (id, callback) {
-    callback = callback || function () {}
+    callback = callback || defaultThrowIfError
 
     getData(id, {local: true}, onData)
 
@@ -132,11 +141,11 @@ module.exports = function Store (model, options) {
     model[method](joinPaths(prefix.concat(id), paths), onGetData)
 
     function onGetData (error, graph) {
-      if (error) {
-        return callback(error)
-      }
-      if (!graph || !graph.json) {
-        return callback(new TypeError('No data in graph at ' + JSON.stringify(prefix.concat(id))))
+      if (error || !graph) {
+        return callback(new errors.DataNotFoundError(
+          'No data found at prefix ' + JSON.stringify(prefix.concat(id)) + ', paths ' + JSON.stringify(paths),
+          error
+        ))
       }
 
       var data = dotProp.get(graph.json, prefix.concat(id).join('.'))
