@@ -1,7 +1,7 @@
 {
   "name": "observ-falcor",
   "main": "index.js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Easily manage Falcor lists / hashes with the observ-family",
   "license": "MIT",
   "repository": "ajoslin/observ-falcor",
