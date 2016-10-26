@@ -141,7 +141,14 @@ module.exports = function Store (model, options) {
     model[method](joinPaths(prefix.concat(id), paths), onGetData)
 
     function onGetData (error, graph) {
-      if (error || !graph) {
+      if (error) {
+        return callback(new errors.DataRequestError(
+          'Error getting data at prefix ' + JSON.stringify(prefix.concat(id)) + ', paths ' + JSON.stringify(paths),
+          error
+        ))
+      }
+
+      if (!graph) {
         return callback(new errors.DataNotFoundError(
           'No data found at prefix ' + JSON.stringify(prefix.concat(id)) + ', paths ' + JSON.stringify(paths),
           error
